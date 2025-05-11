@@ -1,3 +1,5 @@
+# viewer/controller.py
+
 import cv2
 import os
 import time
@@ -18,11 +20,13 @@ class CameraController:
         self.last_frame = None
         self.screenshot_path = os.getcwd()
 
-        # GUI-Elemente (werden später in gui.py befüllt)
+        # GUI-Komponenten
         self.combo = None
         self.monitor_combo = None
         self.resolution_combo = None
         self.fps_combo = None
+        self.codec_combo = None
+        self.mjpg_warning_label = None
 
     def update_resolutions(self, event=None):
         from viewer.camera import get_supported_resolutions
@@ -32,14 +36,56 @@ class CameraController:
             self.resolution_combo.configure(values=resolutions)
             self.resolution_combo.set(resolutions[0])
 
+        # Verfügbare Codecs testen
+        if self.codec_combo:
+            self.codec_combo.configure(values=[])
+
+        available_codecs = []
+        for codec in ["MJPG", "YUY2", "NV12", "RGB3"]:
+            cap = cv2.VideoCapture(cam_index, cv2.CAP_DSHOW)
+            cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*codec))
+            actual = int(cap.get(cv2.CAP_PROP_FOURCC))
+            try:
+                decoded = actual.to_bytes(4, 'little').decode(errors='replace')
+            except OverflowError:
+                decoded = "<ungültig>"
+            cap.release()
+            if decoded == codec:
+                available_codecs.append(codec)
+
+        if available_codecs:
+            self.codec_combo.configure(values=available_codecs)
+            self.codec_combo.set(available_codecs[0])
+        else:
+            self.codec_combo.configure(values=["<none supported>"])
+            self.codec_combo.set("<none supported>")
+
+
     def start_camera(self, event=None):
         if self.cap:
             self.running = False
             self.cap.release()
 
         cam_index = int(self.combo.get().split()[-1])
-        self.cap = cv2.VideoCapture(cam_index)
+        self.cap = cv2.VideoCapture(cam_index, cv2.CAP_DSHOW)
 
+        # Codec setzen aus Dropdown
+        if self.codec_combo:
+            selected_codec = self.codec_combo.get()
+            self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*selected_codec))
+            actual_codec = int(self.cap.get(cv2.CAP_PROP_FOURCC))
+            try:
+                decoded_codec = actual_codec.to_bytes(4, 'little').decode(errors='replace')
+            except OverflowError:
+                decoded_codec = "<ungültig>"
+            if decoded_codec != selected_codec:
+                if self.mjpg_warning_label:
+                    self.mjpg_warning_label.configure(text=f"Codec '{selected_codec}' not supported by this camera.")
+            else:
+                if self.mjpg_warning_label:
+                    self.mjpg_warning_label.configure(text="")
+
+        # Auflösung und FPS setzen
         width, height = map(int, self.resolution_combo.get().split("x"))
         fps = int(self.fps_combo.get())
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
