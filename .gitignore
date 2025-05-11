@@ -1,0 +1,19 @@
+# PyInstaller build folders
+/dist/
+/build/
+/__pycache__/
+/*.spec
+
+# Virtuelle Umgebungen
+.venv/
+/env/
+
+# IDE-Ordner
+.vscode/
+.idea/
+
+# Temporäre Dateien
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
