@@ -21,15 +21,7 @@ Created by **Jan Pultin** with a focus on full-screen monitoring, screenshot cap
 
 ## 📸 Screenshot
 
-> _(Insert screenshot of UI and fullscreen camera view here later)_
-
-To embed images, use the following syntax (images must be in your repo folder):
-
-```
-![UI Screenshot](screenshots/ui_example.png)
-```
-
-![Optional caption](screenshots/ui.png)
+![](screenshots/ui.png)
 
 ---
 
