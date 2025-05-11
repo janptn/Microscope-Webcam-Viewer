@@ -1,21 +1,21 @@
-# 🔬 Microscope Video Viewer 1.0
-
-A modern, minimalistic desktop application built with Python and OpenCV to display live video streams from USB microscopes or webcams.  
-Created by **Jan Pultin** with a focus on full-screen monitoring, screenshot capture, and user-friendly controls.
+**Microscope Video Viewer 1.0**  
+_A modern, minimalistic desktop application built with Python, OpenCV, and CustomTkinter to display live video streams from USB microscopes or webcams. Created by Jan Pultin._
 
 ---
 
 ## ✅ Features
 
-- 📷 Select any connected camera (index-based listing)
-- 🖥️ Choose which monitor to display the video on
-- 🧩 Resolution presets: 4K, 1440p, 1080p, 720p (auto-detected per device)
-- 🎞️ Adjustable frame rate: 15 / 30 / 60 FPS
-- 🖼️ Fullscreen toggle via button or `F11`
-- 📸 Take screenshots with one click
-- 💾 Choose where screenshots are saved
-- 🔍 Live zoom with mouse wheel in the camera window
-- 🎨 CustomTkinter dark-themed modern UI
+- **📷 Camera Selection**: Index-based listing of all connected cameras.  
+- **🔄 Refresh Cameras**: Quickly rescan attached devices with a responsive loading screen.  
+- **🖥️ Monitor Selection**: Choose which monitor to display the video on.  
+- **🎛️ Dynamic Settings Grid**: 2×2 layout for Resolution, FPS, Codec, and **Refresh Camera Max Settings** button.  
+- **🖼️ Resolution Presets**: Auto-detected common resolutions (4K, 1440p, 1080p, 720p, etc.) per device.  
+- **⏱️ Adjustable FPS**: Test and select supported frame rates (15, 30, 60).  
+- **🎨 Codec Detection**: Live identification of compatible FOURCC codecs (`MJPG`, `YUY2`, `NV12`, `RGB3`) with loading indicator.  
+- **Ⓜ️ Fullscreen Toggle**: Enter/exit fullscreen via button or F11.  
+- **📸 Screenshot Capture**: Take and save current frame in user‑chosen folder.  
+- **🖱️ Live Zoom**: Mouse wheel support within the video window.  
+- **🌓 Dark Theme**: Modern dark‑blue color scheme by CustomTkinter.  
 
 ---
 
@@ -23,70 +23,63 @@ Created by **Jan Pultin** with a focus on full-screen monitoring, screenshot cap
 
 ![](screenshots/ui.png)
 
----
-
 ## 🚀 Installation
 
-### 1. Install Python (>= 3.10)
-Download from [https://www.python.org](https://www.python.org)
+1. **Prerequisites**:  
+   - Python 3.10 or higher  
+   - Git (optional, for cloning)
 
-### 2. Clone the repository
-```bash
-git clone https://github.com/yourname/microscope-viewer.git
-cd microscope-viewer
-```
+2. **Clone Repository**:  
+   ```bash
+   git clone https://github.com/janptn/microscope-viewer.git
+   cd microscope-viewer
+   ```
 
-### 3. Install dependencies
-```bash
-pip install -r requirements.txt
-```
-
-Example `requirements.txt`:
-```
-opencv-python
-customtkinter
-screeninfo
-numpy
-```
+3. **Install Dependencies**:  
+   ```bash
+   pip install -r requirements.txt
+   ```
+   **Example** `requirements.txt`:  
+   ```
+   opencv-python
+   customtkinter
+   screeninfo
+   numpy
+   ```
 
 ---
 
 ## ▶️ Usage
 
-Run the application with:
+Run the application:
 ```bash
-python webcam.py
+python main.py
 ```
 
-### Controls:
-- Use dropdowns to select **camera**, **resolution**, **monitor**, and **FPS**
-- Use mouse wheel inside the video window to zoom in/out
-- Press `F11` or click **Fullscreen** to toggle fullscreen mode
-- Click **Screenshot** to save the current frame
-- Click **Set Save Folder** to choose where screenshots are saved
+**Controls**:
+- Select **Camera**, **Monitor**, **Resolution**, **FPS**, and **Codec** from dropdowns.  
+- Click **Refresh Cameras** to rescan devices.  
+- Use **Refresh Camera Max Settings** to detect supported resolution, FPS, and codec for the selected camera (with clear loading screen).  
+- **Start Camera** to begin live preview.  
+- **Fullscreen** button or **F11** to toggle fullscreen view.  
+- **Screenshot** to capture current frame.  
+- **Set Save Folder** to choose directory for screenshots.  
+- Mouse wheel for **zoom** within the video output window.  
 
 ---
 
-## ⚠️ Notes
+## 🧠 Future Improvements
 
-- Camera detection is based on index (e.g. Camera 0, Camera 1). If you need real device names, integration with `ffmpeg` can be added.
-- Screenshots are saved as `.png` with timestamp filenames.
-
----
-
-## 🧠 To Do (Future Ideas)
-
-- Real device name detection via ffmpeg or DirectShow
-- Recording functionality
-- Image enhancement or filters
-- Settings memory between sessions
+- **Device Name Display**: Integrate with FFmpeg or DirectShow for real device names.  
+- **Video Recording**: Add start/stop recording to file.  
+- **Advanced Filters**: Real‑time image processing (edge detection, contrast).  
+- **Preferences**: Save user settings across sessions.  
 
 ---
 
 ## 👤 Author
 
-Developed by **Jan Pultin**  
-For technical use with microscopes, camera tests, and educational experiments.
+**Jan Pultin** – Built for laboratory imaging, educational demonstrations, and research.
 
 ---
 
