@@ -19,7 +19,7 @@ class CameraViewer:
         self.last_frame = None
         self.screenshot_path = os.getcwd()
 
-        self.center_window(400, 370)
+        self.center_window(400, 540)
         self.master.resizable(False, False)
 
         self.title_label = ctk.CTkLabel(master, text="Microscope Video Viewer 1.0",
@@ -31,6 +31,7 @@ class CameraViewer:
         self.combo = ctk.CTkComboBox(master, width=300, state="readonly", font=ctk.CTkFont(family="Segoe UI"))
         self.combo.pack(pady=5)
         self.combo.configure(values=self.detect_cameras())
+        self.combo.bind("<<ComboboxSelected>>", self.update_resolutions)
 
         self.monitor_label = ctk.CTkLabel(master, text="Choose Monitor:", font=ctk.CTkFont(family="Segoe UI"))
         self.monitor_label.pack()
@@ -39,6 +40,22 @@ class CameraViewer:
         self.monitor_combo.configure(values=[f"Monitor {i+1} ({m.width}x{m.height})"
                                              for i, m in enumerate(get_monitors())])
         self.monitor_combo.set(self.monitor_combo.cget("values")[0])
+
+        # Auflösungsauswahl
+        self.resolution_label = ctk.CTkLabel(master, text="Choose Resolution:", font=ctk.CTkFont(family="Segoe UI"))
+        self.resolution_label.pack()
+        self.resolution_combo = ctk.CTkComboBox(master, width=300, state="readonly", font=ctk.CTkFont(family="Segoe UI"))
+        self.resolution_combo.pack(pady=5)
+        self.resolution_combo.configure(values=self.get_supported_resolutions(cam_index=0))
+        self.resolution_combo.set("1920x1080")
+
+        # FPS Auswahl
+        self.fps_label = ctk.CTkLabel(master, text="Choose FPS:", font=ctk.CTkFont(family="Segoe UI"))
+        self.fps_label.pack()
+        self.fps_combo = ctk.CTkComboBox(master, width=300, state="readonly", font=ctk.CTkFont(family="Segoe UI"))
+        self.fps_combo.pack(pady=5)
+        self.fps_combo.configure(values=["15", "30", "60"])
+        self.fps_combo.set("30")
 
         button_container = ctk.CTkFrame(master)
         button_container.pack(pady=15)
@@ -76,6 +93,27 @@ class CameraViewer:
         self.master.protocol("WM_DELETE_WINDOW", self.close_all)
         self.master.bind("<F11>", self.toggle_fullscreen)
 
+    def get_supported_resolutions(self, cam_index):
+        test_resolutions = [(3840,2160), (2560,1440), (1920,1080), (1280,720)]
+        working = []
+        cap = cv2.VideoCapture(cam_index)
+        for w,h in test_resolutions:
+            cap.set(cv2.CAP_PROP_FRAME_WIDTH, w)
+            cap.set(cv2.CAP_PROP_FRAME_HEIGHT, h)
+            actual_w = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+            actual_h = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+            if abs(actual_w - w) < 20 and abs(actual_h - h) < 20:
+                working.append(f"{w}x{h}")
+        cap.release()
+        return working
+
+    def update_resolutions(self, event=None):
+        cam_index = int(self.combo.get().split()[-1])
+        resolutions = self.get_supported_resolutions(cam_index)
+        if resolutions:
+            self.resolution_combo.configure(values=resolutions)
+            self.resolution_combo.set(resolutions[0])
+
     def detect_cameras(self, max_cams=5):
         found = []
         for i in range(max_cams):
@@ -93,6 +131,14 @@ class CameraViewer:
             self.cap.release()
         cam_index = int(self.combo.get().split()[-1])
         self.cap = cv2.VideoCapture(cam_index)
+
+        # Auflösung und FPS setzen
+        resolution = self.resolution_combo.get()
+        width, height = map(int, resolution.split("x"))
+        fps = int(self.fps_combo.get())
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+        self.cap.set(cv2.CAP_PROP_FPS, fps)
         self.running = True
         Thread(target=self.show_video, daemon=True).start()
 
